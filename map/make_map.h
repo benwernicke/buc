@@ -6,12 +6,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define INITIAL_CAPACITY 4
-#define GROWTH_FACTOR 2
-#define MAX_LOAD_FACTOR 0.75f
-#define MIN_LOAD_FACTOR 0.25f
-#define FIT_LOAD_FACTOR 0.5f
-
 #define HASH fnv_hash
 #define ISEQ is_eq_str
 
@@ -49,7 +43,7 @@
     VAL_TYPE* PREFIX##_iter_value(PREFIX##_t* m, uintptr_t iter);
 
 #define MAKE_MAP_IMPLEMENTATION(PREFIX, KEY_TYPE, VAL_TYPE, HASH, ISEQ,        \
-    INITIAL_SIZE, GROWTH_FACTOR, MAX_LOAD_FACTOR, FIT_LOAD_FACTOR,             \
+    INITIAL_CAPACITY, GROWTH_FACTOR, MAX_LOAD_FACTOR, FIT_LOAD_FACTOR,         \
     MIN_LOAD_FACTOR)                                                           \
                                                                                \
     typedef struct entry_t entry_t;                                            \

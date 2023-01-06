@@ -1,17 +1,14 @@
 #include "map.h"
+#include "../../../lib/test.h"
 
 #include <assert.h>
 #include <stdio.h>
 
-#define TEST_START()                                                           \
-    do {                                                                       \
-        printf("[test] %s:\n", __func__);                                      \
-    } while (0)
+#define MAX_LOAD_FACTOR 0.75f
+#define FIT_LOAD_FACTOR 0.5f
+#define MIN_LOAD_FACTOR 0.25f
 
-#define TEST_END()                                                             \
-    do {                                                                       \
-        printf("\tok\n");                                                      \
-    } while (0)
+#define INITIAL_CAPACITY 4
 
 void contains(void)
 {
