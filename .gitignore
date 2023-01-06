@@ -1,6 +1,9 @@
 out
 beaver
 build
+*/out
+*/beaver
+*/build
 
 # Prerequisites
 *.d
