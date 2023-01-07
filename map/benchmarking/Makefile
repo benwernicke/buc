@@ -15,11 +15,11 @@ objects			:= ${test_a.out} ${test_b.out} ${cw_a.out} ${cw_b.out}
 bench_targets	:= cw_a.out cw_b.out
 test_targets	:= test_a.out test_b.out
 
-all:
+all: bench
 
 bench: CFLAGS := ${FAST_FLAGS}
 bench: ${bench_targets}
-	hyperfine -N './target/cw_a bench/lorem' './target/cw_b bench/lorem'
+	hyperfine -N './target/cw_a.out bench/lorem' './target/cw_b.out bench/lorem'
 
 test: ${test_targets}
 	echo "[running] unit tests"  	&& \
