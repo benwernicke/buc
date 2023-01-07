@@ -6,9 +6,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define HASH fnv_hash
-#define ISEQ is_eq_str
-
 #define MAKE_MAP_HEADER(PREFIX, KEY_TYPE, VAL_TYPE)                            \
     typedef struct PREFIX##_t PREFIX##_t;                                      \
                                                                                \
