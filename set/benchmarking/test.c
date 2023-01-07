@@ -16,6 +16,12 @@ uintptr_t set_end(set_t* m);
 uintptr_t set_next(set_t* m, uintptr_t iter);
 char** set_iter_key(set_t* m, uintptr_t iter);
 
+void size(void)
+{
+    TEST_START();
+    TEST_END();
+}
+
 void get_key(void)
 {
     TEST_START();
