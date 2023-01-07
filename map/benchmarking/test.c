@@ -3,6 +3,11 @@
 #include <assert.h>
 #include <stdio.h>
 
+#define TEST_INIT(fname)                                                       \
+    do {                                                                       \
+        printf("[init] %s\n", fname);                                          \
+    } while (0)
+
 #define TEST_START()                                                           \
     do {                                                                       \
         printf("[test] %s:\n", __func__);                                      \
@@ -3154,8 +3159,9 @@ void create_free(void)
     TEST_END();
 }
 
-int main(void)
+int main(int argc, char** argv)
 {
+    TEST_INIT(argv[0]);
     insert_get();
     create_free();
     copy_pair();
