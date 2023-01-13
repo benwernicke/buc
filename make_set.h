@@ -6,18 +6,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct PREFIX##_t PREFIX##_t;
-
-#define INITIAL_CAPACITY 4
-#define GROWTH_FACTOR 2
-#define MAX_LOAD_FACTOR 0.75f
-#define MIN_LOAD_FACTOR 0.25f
-#define FIT_LOAD_FACTOR 0.5f
-
-#define HASH fnv_hash
-#define ISEQ is_eq_str
-
 #define MAKE_SET_HEADER(PREFIX, KEY_TYPE)                               \
+typedef struct PREFIX##_t PREFIX##_t;                                   \
                                                                         \
 PREFIX##_t* PREFIX##_create(void);                                      \
 void PREFIX##_free(PREFIX##_t* m);                                      \
