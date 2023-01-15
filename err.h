@@ -39,7 +39,7 @@ typedef enum {
         }                           \
     } while (0)
 
-#define ERR_IF_MSG_T(b, e, t, ...)
+#define ERR_IF_MSG_T(b, e, t, ...)  \
     do {                            \
         if (b) {                    \
             ERR_MSG_(__VA_ARGS__);  \
