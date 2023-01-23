@@ -38,12 +38,10 @@ int main(int argc, char** argv)
 
     char* s;
     char* e;
-    uint32_t i = 0;
     first_word(content, &s, &e);
-    for (; s; ++i, first_word(e, &s, &e)) {
+    for (; s; first_word(e, &s, &e)) {
         if (*e) *e++ = 0;
         uint32_t* v = map_get_or_insert(m, s, 0);
-        if (!v) { printf("%d: %s\n",i, s); exit(1); }
         *v += 1;
     }
 

@@ -41,45 +41,67 @@ map_t* map_create(void)
 
 static uint8_t node_find_child(node_t* n, char c)
 {
-    __m128i cs = _mm_set1_epi8(c);
 
-    uint8_t offset = 0;
-    uint8_t total = 0;
-    for (; offset * 16 < n->cap; total += 16, ++offset) {
-        __m128i da = _mm_loadu_si128((__m128i*)n->child_idx + offset);
+    switch(n->cap) {
+    case 0:
+        return IDX_NULL;
+    case 128:
+        return (uint8_t)c;
+    default:;
+        __m128i cs = _mm_set1_epi8(c);
+        __m128i da = _mm_loadu_si128((__m128i*)n->child_idx);
         uint8_t idx = _mm_cmpistri(da, cs, SSE_MODE);
-        if (idx < 16) {
-            return total + idx;
-        }
+        return idx < 16 ? idx : IDX_NULL;
     }
-    return IDX_NULL;
 }
 
 static node_t* trie_get_and_alloc(node_t* n, char* s)
 {
     if (!*s) return n;
 
-    uint8_t idx = node_find_child(n, *s);
-    if (idx == IDX_NULL) {
-        if (n->sz >= n->cap) {
-            uint8_t old_cap = n->cap;
-            n->cap += 16;
-            n->child     = realloc(n->child,     n->cap * sizeof(*n->child));
-            n->child_idx = realloc(n->child_idx, n->cap * sizeof(*n->child_idx));
-            if (!n->child || !n->child_idx) {
-                printf("child_idx: %s\n", n->child_idx);
-                printf("Cap: %u -> %u\n", old_cap, n->cap);
-                assert(n->child);
-                assert(n->child_idx);
-                return NULL;
-            }
-            memset(n->child_idx + n->sz, 0, n->cap - n->sz);
-        }
+    uint8_t idx;
+
+    switch (n->cap) {
+    case 128:
+        idx = (uint8_t)*s;
+        break;
+    case 0:
+        n->cap = 16;
+        n->child_idx = calloc(16, 1);
+        n->child = calloc(16, sizeof(*n->child));
+        assert(n->child_idx && n->child);
         idx = n->sz++;
         n->child_idx[idx] = *s;
+        break;
+    default:;
+        __m128i c = _mm_set1_epi8(*s);
+        __m128i d = _mm_loadu_si128((__m128i*)n->child_idx);
+        idx = _mm_cmpistri(d, c, SSE_MODE);
+
+        if (idx == 16) {
+            if (n->sz == 16) {
+                node_t** new_child = calloc(128, sizeof(*new_child));
+                idx = 0;
+                for (; idx < 16; ++idx) {
+                    new_child[(uint8_t)n->child_idx[idx]] = n->child[idx];
+                }
+                n->cap = 128;
+                free(n->child);
+                free(n->child_idx);
+                n->child_idx = NULL;
+                n->child = new_child;
+                idx = (uint8_t)*s;
+            } else {
+                idx = n->sz++;
+                n->child_idx[idx] = *s;
+            }
+        }
+        break;
+    }
+
+    if (!n->child[idx]) {
         n->child[idx] = calloc(1, sizeof(**n->child));
         assert(n->child[idx]);
-        if (!n->child) return NULL;
     }
 
     return trie_get_and_alloc(n->child[idx], s + 1);
@@ -87,9 +109,23 @@ static node_t* trie_get_and_alloc(node_t* n, char* s)
 
 static void trie_free(node_t* n)
 {
+    if (!n) return;
+
     uint8_t idx = 0;
-    for (; idx < n->sz; ++idx) {
-        trie_free(n->child[idx]);
+
+    switch (n->cap) {
+    case 128:
+        for (; idx < 128; ++idx) {
+            trie_free(n->child[idx]);
+        }
+        break;
+    case 0:
+        break;
+    default:
+        for (; idx < n->sz; ++idx) {
+            trie_free(n->child[idx]);
+        }
+        break;
     }
     free(n->child);
     free(n->child_idx);
@@ -100,9 +136,7 @@ void map_free(map_t* m)
 {
     if (!m) return;
 
-    if (m->root) { 
-        trie_free(m->root);
-    }
+    trie_free(m->root);
     free(m);
 }
 
