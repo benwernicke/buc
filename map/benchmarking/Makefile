@@ -19,7 +19,7 @@ all: bench
 
 bench: CFLAGS := ${FAST_FLAGS}
 bench: ${bench_targets}
-	hyperfine -N './target/cw_a.out bench/lorem' './target/cw_b.out bench/lorem'
+	hyperfine -N './cw_a.out bench/lorem' './cw_b.out bench/lorem'
 
 test: ${test_targets}
 	echo "[running] unit tests"  	&& \
@@ -30,9 +30,9 @@ test: ${test_targets}
 	${CC} $< ${CFLAGS} -c -o $@ 
 
 %.out: ${objects}
-	${CC} ${$@} ${CFLAGS} -o target/$@ 
+	${CC} ${$@} ${CFLAGS} -o $@ 
 
 clean: 
-	rm ${objects} target/*
+	rm -f *.o *.log *.out
 
 .PHONY: all clean bench test
